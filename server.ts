@@ -83,6 +83,7 @@ const jpPoliceSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   username: { type: String, required: true },
   location: { type: String, required: true },
+  againstName: { type: String, default: '' },
   phone: { type: String, required: true },
   cause: { type: String, required: true },
   code: { type: String, required: true },
@@ -364,9 +365,9 @@ const requireOfficer = async (req: any, res: any, next: any) => {
 // --- JP Police Routes ---
 app.post('/api/police/complaints', authenticateToken, async (req: any, res) => {
   try {
-    const { location, phone, cause } = req.body;
-    if (!location || !phone || !cause) {
-      return res.status(400).json({ error: 'Location, phone, and cause are required.' });
+    const { location, phone, cause, againstName } = req.body;
+    if (!location || !phone || !cause || !againstName) {
+      return res.status(400).json({ error: 'Location, phone, cause, and Complaint Against Name are required.' });
     }
 
     const user = await db.User.findOne({ accountID: req.user.accountID });
@@ -379,6 +380,7 @@ app.post('/api/police/complaints', authenticateToken, async (req: any, res) => {
       userId: user.accountID,
       username: user.username,
       location,
+      againstName: againstName || '',
       phone,
       cause,
       code,

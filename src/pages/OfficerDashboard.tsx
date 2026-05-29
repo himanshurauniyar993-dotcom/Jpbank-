@@ -23,6 +23,7 @@ interface Complaint {
   userId: string;
   username: string;
   location: string;
+  againstName?: string;
   phone: string;
   cause: string;
   status: string;
@@ -923,6 +924,9 @@ export default function OfficerDashboard() {
                       <p className="text-sm text-gray-700"><span className="font-semibold">User:</span> {complaint.username} ({complaint.userId})</p>
                       <p className="text-sm text-gray-700"><span className="font-semibold">Phone:</span> {complaint.phone}</p>
                       <p className="text-sm text-gray-700"><span className="font-semibold">Location:</span> {complaint.location}</p>
+                      {complaint.againstName && (
+                        <p className="text-sm text-gray-700 font-bold text-red-600"><span className="font-semibold text-gray-700">Against:</span> {complaint.againstName}</p>
+                      )}
                       <div className="pt-2 mt-2 border-t border-gray-200">
                         <p className="text-sm text-gray-700 font-semibold mb-1">Cause:</p>
                         <p className="text-sm text-gray-600">{complaint.cause}</p>

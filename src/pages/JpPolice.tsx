@@ -8,6 +8,7 @@ interface Complaint {
   _id: string;
   code: string;
   location: string;
+  againstName?: string;
   phone: string;
   cause: string;
   status: string;
@@ -23,6 +24,7 @@ export default function JpPolice() {
   
   // Form State
   const [location, setLocation] = useState('');
+  const [againstName, setAgainstName] = useState('');
   const [phone, setPhone] = useState('');
   const [cause, setCause] = useState('');
 
@@ -59,14 +61,14 @@ export default function JpPolice() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ location, phone, cause })
+        body: JSON.stringify({ location, phone, cause, againstName })
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setSuccess(`Complaint filed successfully! Code: ${data.data.code}`);
-        setLocation(''); setPhone(''); setCause('');
+        setLocation(''); setAgainstName(''); setPhone(''); setCause('');
         fetchComplaints();
         setTimeout(() => { setView('list'); setSuccess(''); }, 2000);
       } else {
@@ -196,6 +198,17 @@ export default function JpPolice() {
                           <p className="text-sm text-gray-800 font-bold">{complaint.location}</p>
                         </div>
                       </div>
+                      {complaint.againstName && (
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center shrink-0">
+                            <Plus className="w-4 h-4 text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Complaint Against</p>
+                            <p className="text-sm text-gray-800 font-bold">{complaint.againstName}</p>
+                          </div>
+                        </div>
+                      )}
                       <div className="flex items-start space-x-3">
                         <div className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center shrink-0">
                           <ShieldAlert className="w-4 h-4 text-gray-400" />
@@ -285,6 +298,18 @@ export default function JpPolice() {
                   placeholder="Where did this happen?"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B22222]/20 focus:border-[#B22222] transition-all"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Complaint Against Name</label>
+                <input
+                  type="text"
+                  required
+                  value={againstName}
+                  onChange={(e) => setAgainstName(e.target.value)}
+                  placeholder="Full name of person"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B22222]/20 focus:border-[#B22222] transition-all"
                 />
               </div>
 
