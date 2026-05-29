@@ -1157,8 +1157,8 @@ app.put('/api/user/profile', authenticateToken, async (req: any, res) => {
     if (contact !== undefined) user.contact = contact;
     if (profilePic !== undefined) user.profilePic = profilePic;
     if (nickname !== undefined) {
-      if (nickname.length > 8) {
-        return res.status(400).json({ error: 'Nickname must be max 8 characters' });
+      if (nickname.length > 16) {
+        return res.status(400).json({ error: 'Nickname must be max 16 characters' });
       }
       user.nickname = nickname;
     }
@@ -1423,11 +1423,11 @@ app.post('/api/officer/create-account', authenticateToken, requireOfficer, async
       return res.status(400).json({ error: 'Required fields missing' });
     }
 
-    if (username.length > 8) {
-      return res.status(400).json({ error: 'Username must be max 8 characters' });
+    if (username.length > 16) {
+      return res.status(400).json({ error: 'Username must be max 16 characters' });
     }
-    if (nickname.length > 8) {
-      return res.status(400).json({ error: 'Nickname must be max 8 characters' });
+    if (nickname.length > 16) {
+      return res.status(400).json({ error: 'Nickname must be max 16 characters' });
     }
 
     // Phone validation: +81 or +91 followed by 10 digits
@@ -1536,8 +1536,18 @@ app.put('/api/officer/users/:accountID', authenticateToken, requireOfficer, asyn
     if (!target) return res.status(404).json({ error: 'Account not found.' });
 
     const updateData: any = {};
-    if (nickname !== undefined) updateData.nickname = nickname;
-    if (username !== undefined) updateData.username = username;
+    if (nickname !== undefined) {
+      if (nickname.length > 16) {
+        return res.status(400).json({ error: 'Nickname must be max 16 characters' });
+      }
+      updateData.nickname = nickname;
+    }
+    if (username !== undefined) {
+      if (username.length > 16) {
+        return res.status(400).json({ error: 'Username must be max 16 characters' });
+      }
+      updateData.username = username;
+    }
     if (phone !== undefined) updateData.phone = phone;
     if (email !== undefined) updateData.email = email;
     if (profilePic !== undefined) updateData.profilePic = profilePic;

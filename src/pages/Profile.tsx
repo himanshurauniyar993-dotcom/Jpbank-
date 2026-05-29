@@ -135,7 +135,7 @@ export default function Profile() {
           {/* Profile Picture Section */}
           <div className="flex flex-col items-center justify-center mb-8">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center transition-colors duration-200">
+              <div className="w-32 h-32 rounded-3xl border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center transition-colors duration-200">
                 {profilePic ? (
                   <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
@@ -145,7 +145,7 @@ export default function Profile() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-0 right-0 w-10 h-10 bg-[#FFD700] rounded-full flex items-center justify-center shadow-md border-2 border-white dark:border-gray-800 hover:bg-yellow-400 transition-colors"
+                className="absolute bottom-0 right-0 w-10 h-10 bg-[#FFD700] rounded-xl flex items-center justify-center shadow-md border-2 border-white dark:border-gray-800 hover:bg-yellow-400 transition-colors"
               >
                 <Camera className="w-5 h-5 text-[#8B0000]" />
               </button>
@@ -171,10 +171,10 @@ export default function Profile() {
                 <input
                   type="text"
                   value={nickname}
-                  maxLength={8}
+                  maxLength={16}
                   onChange={(e) => setNickname(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-[#B22222] focus:border-transparent transition-all outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  placeholder="Nickname (max 8 chars)"
+                  placeholder="Nickname (max 16 chars)"
                   required
                 />
               </div>
