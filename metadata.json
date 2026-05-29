@@ -3,5 +3,8 @@
   "description": "Professional-grade banking web application with QR payments and officer dashboard.",
   "requestFramePermissions": [
     "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
 }
