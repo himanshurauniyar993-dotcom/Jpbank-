@@ -1,0 +1,7 @@
+{
+  "name": "Jp Bank / Jp Gov",
+  "description": "Professional-grade banking web application with QR payments and officer dashboard.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

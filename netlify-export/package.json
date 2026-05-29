@@ -1,0 +1,9 @@
+{
+  "name": "jp-bank-netlify",
+  "version": "1.0.0",
+  "description": "JP Bank Netlify Deployment",
+  "main": "index.js",
+  "dependencies": {
+    "mongoose": "^8.2.0"
+  }
+}
