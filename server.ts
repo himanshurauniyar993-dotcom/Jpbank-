@@ -1055,7 +1055,8 @@ app.post('/api/auth/register', async (req, res) => {
       accountID, 
       username: newUser.username,
       nickname, 
-      role: newUser.role 
+      role: newUser.role,
+      profilePic: ''
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -1090,6 +1091,7 @@ app.post('/api/auth/login', async (req, res) => {
       username: user.username,
       nickname: user.nickname, 
       role: user.role,
+      profilePic: user.profilePic || '',
       tickType: user.tickType || '',
       isBanned: user.isBanned || false
     });
@@ -1156,28 +1158,30 @@ app.put('/api/user/profile', authenticateToken, async (req: any, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (contact !== undefined) user.contact = contact;
-    if (profilePic !== undefined) user.profilePic = profilePic;
+    const updateData: any = {};
+    if (contact !== undefined) updateData.contact = contact;
+    if (profilePic !== undefined) updateData.profilePic = profilePic;
     if (nickname !== undefined) {
       if (nickname.length > 16) {
         return res.status(400).json({ error: 'Nickname must be max 16 characters' });
       }
-      user.nickname = nickname;
+      updateData.nickname = nickname;
     }
 
-    await user.save();
+    await db.User.updateOne({ accountID: req.user.accountID }, { $set: updateData });
+    const updatedUser = await db.User.findOne({ accountID: req.user.accountID });
     
     res.json({
-      accountID: user.accountID,
-      username: user.username,
-      nickname: user.nickname,
-      email: user.email,
-      passport: user.passport,
-      phone: user.phone,
-      balance: user.balance,
-      role: user.role,
-      contact: user.contact,
-      profilePic: user.profilePic
+      accountID: updatedUser.accountID,
+      username: updatedUser.username,
+      nickname: updatedUser.nickname,
+      email: updatedUser.email,
+      passport: updatedUser.passport,
+      phone: updatedUser.phone,
+      balance: updatedUser.balance,
+      role: updatedUser.role,
+      contact: updatedUser.contact,
+      profilePic: updatedUser.profilePic
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -1270,15 +1274,12 @@ app.get('/api/transaction/history', authenticateToken, async (req: any, res) => 
     
     let transactions;
     if (isOfficer) {
-      // Officer sees all transactions
       transactions = await db.Transaction.find();
     } else {
-      // User sees their own transactions
       const sent = await db.Transaction.find({ sender: accountID });
       const received = await db.Transaction.find({ receiver: accountID });
       transactions = [...sent, ...received].sort((a, b) => b.date.getTime() - a.date.getTime());
       
-      // Remove duplicates if any (though shouldn't be possible with sender/receiver logic unless self-transfer which is blocked)
       const uniqueIds = new Set();
       transactions = transactions.filter(t => {
         const id = t._id ? t._id.toString() : t.date.getTime().toString();
@@ -1288,9 +1289,19 @@ app.get('/api/transaction/history', authenticateToken, async (req: any, res) => 
       });
     }
     
-    const allUsers = await db.User.find({});
+    // Get unique IDs involved in these transactions
+    const uniqueAccountIDs = new Set<string>();
+    transactions.forEach((t: any) => {
+      if (t.sender) uniqueAccountIDs.add(t.sender);
+      if (t.receiver) uniqueAccountIDs.add(t.receiver);
+    });
+
+    const involvedUsers = await db.User.find({
+      accountID: { $in: Array.from(uniqueAccountIDs) }
+    });
+
     const userData: Record<string, { username: string, profilePic: string, tickType: string, nickname: string, email: string, phone: string }> = {};
-    allUsers.forEach((u: any) => {
+    involvedUsers.forEach((u: any) => {
       userData[u.accountID] = {
         username: u.username,
         profilePic: u.profilePic || '',
@@ -1409,7 +1420,8 @@ app.get('/api/officer/users', authenticateToken, requireOfficer, async (req: any
       phone: u.phone,
       balance: u.balance,
       tickType: u.tickType || '',
-      isBanned: u.isBanned || false
+      isBanned: u.isBanned || false,
+      profilePic: u.profilePic || ''
     })));
   } catch (error: any) {
     res.status(500).json({ error: error.message });

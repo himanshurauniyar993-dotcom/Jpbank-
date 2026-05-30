@@ -17,6 +17,12 @@ export default function Profile() {
   const [message, setMessage] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Sync with user data once it's loaded
+  React.useEffect(() => {
+    if (user && !nickname) setNickname(user.nickname || '');
+    if (user && !profilePic) setProfilePic(user.profilePic || '');
+  }, [user]);
+
   const [currentPin, setCurrentPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [pinLoading, setPinLoading] = useState(false);
